@@ -32,5 +32,7 @@ svcadm enable svc:/network/daytime:stream
 
 so that the "daytime" program can connect to the daytime port (13).
 
+Or run the simple daytime-server.m , as an alternative.
+
 David Stes
 
