@@ -8,13 +8,16 @@ LIBS=-lsocket  -lnsl
 .m.o:
 	$(OBJC) -c $*.m $(MFLAGS)
 
-default : daytime
+default : daytime daytime-server
 
 daytime : daytime.o
 	$(OBJC) -o daytime $? $(LIBS)
 
+daytime-server : daytime-server.o
+	$(OBJC) -o daytime-server $? $(LIBS)
+
 clean::
-	rm daytime
+	rm daytime daytime-server
 	rm -rf *.o
 
 distclean : clean
