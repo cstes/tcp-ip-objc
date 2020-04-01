@@ -1,0 +1,22 @@
+
+OBJC=objc
+MFLAGS=@MFLAGS@
+LIBS=-lsocket  -lnsl
+
+.SUFFIXES: .m 
+
+.m.o:
+	$(OBJC) -c $*.m $(MFLAGS)
+
+default : daytime
+
+daytime : daytime.o
+	$(OBJC) -o daytime $? $(LIBS)
+
+clean::
+	rm daytime
+	rm -rf *.o
+
+distclean : clean
+	rm -rf Makefile config.h config.status config.log autom4te.cache
+

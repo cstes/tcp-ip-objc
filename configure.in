@@ -1,0 +1,10 @@
+dnl autoconf configure script for tcp-ip-objc
+
+AC_INIT()
+
+MFLAGS="-q -O"
+
+AC_SUBST(MFLAGS)
+
+AC_OUTPUT(Makefile config.h)
+
