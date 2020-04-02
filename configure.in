@@ -2,8 +2,13 @@ dnl autoconf configure script for tcp-ip-objc
 
 AC_INIT()
 
-MFLAGS="-q -O"
+AC_CONFIG_AUX_DIR(build-aux)
+AC_CANONICAL_SYSTEM
 
+CPU_VENDOR_OS=$target
+AC_SUBST(CPU_VENDOR_OS)
+
+MFLAGS="-q -O"
 AC_SUBST(MFLAGS)
 
 AC_OUTPUT(Makefile config.h)
