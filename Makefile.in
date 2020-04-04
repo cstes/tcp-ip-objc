@@ -6,7 +6,7 @@ LIBS=-lsocket  -lnsl
 .SUFFIXES: .m 
 
 .m.o:
-	$(OBJC) -c $*.m $(MFLAGS)
+	$(OBJC) $(MFLAGS) -c $*.m
 
 default : daytime daytime-dgram nbdaytime daytime-select daytime-server byteorder
 
