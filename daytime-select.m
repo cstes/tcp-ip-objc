@@ -5,6 +5,9 @@
 #include <sys/socket.h>		/* socket, bind, listen, accept */
 #include <sys/select.h>		/* select */
 
+#include <netinet/in.h>
+#include <arpa/inet.h>  /* inet_ntop */
+
 #include <strings.h> 		/* bzero */
 #include <stdlib.h> 		/* exit */
 #include <unistd.h> 		/* read */
@@ -18,6 +21,7 @@
 int main(int argc,char **argv)
 {
   id c;
+  char *s;
   int i,maxi,maxfd;
   int listenfd,sockfd,connfd;
   char buff[MAXLINE + 1];
@@ -59,10 +63,13 @@ int main(int argc,char **argv)
        clilen = sizeof (cliaddr);
        connfd = accept(listenfd,(struct sockaddr *)&cliaddr,&clilen);
 
-       printf("accept\n");
+       if (inet_ntop(AF_INET,&cliaddr.sin_addr,buff,MAXLINE)) {
+          printf("accept from %s\n",buff);
+       }
 
        ticks = time(NULL);
        snprintf(buff, sizeof(buff), "%.24s\r\n", ctime(&ticks));
+       printf("write %s",buff);
 
        if (write(connfd,buff, strlen(buff)) < 0) {
             fprintf(stderr,"write error\n");
