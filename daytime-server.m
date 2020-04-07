@@ -8,6 +8,8 @@
 #include <stdlib.h> 		/* exit */
 #include <unistd.h> 		/* read */
 
+#include <time.h>		/* ctime */
+
 #include <objpak.h> 		/* Objective-C */
 
 #define MAXLINE 4096

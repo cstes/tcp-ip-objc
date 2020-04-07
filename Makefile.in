@@ -8,28 +8,32 @@ LIBS=-lsocket  -lnsl
 .m.o:
 	$(OBJC) $(MFLAGS) -c $*.m
 
-default : daytime daytime-dgram nbdaytime daytime-select daytime-server byteorder
+default : daytime daytime-dgram nbdaytime daytime-select daytime-server byteorder daytime-server-dgram
 
 daytime : daytime.o
-	$(OBJC) -o daytime $? $(LIBS)
+	$(OBJC) -o $@ $? $(LIBS)
 
 daytime-dgram : daytime-dgram.o
-	$(OBJC) -o daytime-dgram $? $(LIBS)
+	$(OBJC) -o $@ $? $(LIBS)
 
 daytime-server : daytime-server.o
-	$(OBJC) -o daytime-server $? $(LIBS)
+	$(OBJC) -o $@ $? $(LIBS)
+
+daytime-server-dgram : daytime-server-dgram.o
+	$(OBJC) -o $@ $? $(LIBS)
 
 daytime-select : daytime-select.o
-	$(OBJC) -o daytime-select $? $(LIBS)
+	$(OBJC) -o $@ $? $(LIBS)
 
 byteorder : byteorder.o
-	$(OBJC) -o byteorder $? $(LIBS)
+	$(OBJC) -o $@ $? $(LIBS)
 
 nbdaytime : nbdaytime.o
-	$(OBJC) -o nbdaytime $? $(LIBS)
+	$(OBJC) -o $@ $? $(LIBS)
 
 clean::
-	rm -f daytime daytime-dgram daytime-server nbdaytime daytime-select byteorder
+	rm -f daytime daytime-dgram daytime-server nbdaytime
+	rm -rf daytime-select byteorder daytime-server-dgram
 	rm -rf *.o
 
 distclean : clean
