@@ -38,13 +38,12 @@ static int iput;
 static int nqueue;
 static socklen_t clilen;
 
-void sig_io(int signo)
+void sig_io(int signal, siginfo_t * info, void * context)
 {
   DG *ptr;
   int nread;
   ssize_t len;
 
-  printf("in sig_io\n");
   for(nread=0;;) {
     if (nqueue>=QSIZE) {
       printf("receive overflow\n");
@@ -67,10 +66,9 @@ void sig_io(int signo)
   cntread[nread]++;
 }
 
-void sig_hup(int signo)
+void sig_hup(int signal, siginfo_t * info, void * context)
 {
   int i;
-  printf("in sig_hup\n");
   for(i=0;i<=QSIZE;i++) printf("cntread[%d] = %ld\n",i,cntread[i]);
 }
 
@@ -81,6 +79,8 @@ void dg_echo(struct sockaddr *pcliaddr,socklen_t clilen_arg)
   const int on = 1;
   char buff[MAXLINE + 1];
   sigset_t zeromask,newmask,oldmask;
+  struct sigaction sig_action;
+  struct sigaction old_action;
 
   for(i=0;i<QSIZE;i++) {
     dg[i].dg_data = malloc(MAXDG);
@@ -90,11 +90,21 @@ void dg_echo(struct sockaddr *pcliaddr,socklen_t clilen_arg)
 
   iget=iput=nqueue = 0;
 
-#ifndef __sun__
   printf("installing signal handlers\n");
-  signal(SIGHUP,sig_hup);
-  signal(SIGIO,sig_io);
-#endif
+
+  memset(&sig_action, 0, sizeof(sig_action));
+  sig_action.sa_sigaction = sig_hup;
+  sig_action.sa_flags = SA_RESTART | SA_SIGINFO;
+  sigemptyset(&sig_action.sa_mask);
+
+  sigaction(SIGHUP, &sig_action, &old_action);
+
+  memset(&sig_action, 0, sizeof(sig_action));
+  sig_action.sa_sigaction = sig_io;
+  sig_action.sa_flags = SA_RESTART | SA_SIGINFO;
+  sigemptyset(&sig_action.sa_mask);
+
+  sigaction(SIGIO, &sig_action, &old_action);
 
   if (fcntl(sockfd,F_SETOWN,getpid())<0) {
    printf("fcntl F_SETOWN failed\n");
@@ -117,10 +127,6 @@ void dg_echo(struct sockaddr *pcliaddr,socklen_t clilen_arg)
   sigprocmask(SIG_BLOCK,&newmask,&oldmask);
 
   for(;;) {
-
-    printf("reinstalling signal handlers\n");
-    signal(SIGHUP,sig_hup);
-    signal(SIGIO,sig_io);
 
     while (nqueue == 0) sigsuspend(&zeromask);
 
